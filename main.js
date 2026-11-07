@@ -1,170 +1,262 @@
-console.log("[GCO-SYSTEM v1.0 ONLINE]");
 
-let gco_registros = [];
-let gco_categorias = [];
-let gco_resumen = {};
-let gco_configuracion = {};
+console.log("ECOVIDA iniciada correctamente");
+const API = {
+    registros: "",
+    categorias: "",
+    resumen: "",
+    configuracion: ""
+};
+let registros = [];
+let categorias = [];
+let resumen = {};
+let configuracion = {};
 
-const gco_dataForm = document.getElementById("dataForm");
-const gco_inputNombre = document.getElementById("inputNombre");
-const gco_selectCategoria = document.getElementById("selectCategoria");
-const gco_inputMonto = document.getElementById("inputMonto");
-const gco_selectFiltro = document.getElementById("selectFiltro");
-const gco_listaResultados = document.getElementById("listaResultados");
-const gco_resumenConteo = document.getElementById("resumenConteo");
-const gco_estadoCarga = document.getElementById("estadoCarga");
-const gco_btnGuardar = document.getElementById("btnGuardar");
-async function gco_cargarArchivoJson(gco_rutaArchivo) {
-    const gco_respuesta = await fetch(gco_rutaArchivo);
+const formulario = document.getElementById("dataForm");
+const inputNombre = document.getElementById("inputNombre");
+const selectCategoria = document.getElementById("selectCategoria");
+const inputMonto = document.getElementById("inputMonto");
+const selectFiltro = document.getElementById("selectFiltro");
+const listaResultados = document.getElementById("listaResultados");
+const resumenConteo = document.getElementById("resumenConteo");
+const estadoCarga = document.getElementById("estadoCarga");
+const botonGuardar = document.getElementById("btnGuardar");
 
-    if (!gco_respuesta.ok) {
-        throw new Error(`No fue posible cargar ${gco_rutaArchivo}. Estado HTTP: ${gco_respuesta.status}`);
+async function consultarAPI(url) {
+    const respuesta = await fetch(url);
+
+    if (!respuesta.ok) {
+        throw new Error("Error al consultar la API");
     }
 
-    return await gco_respuesta.json();
+    return await respuesta.json();
 }
-async function gco_inicializarAplicacion() {
-    gco_estadoCarga.textContent = "Solicitando información de los materiales reciclables...";
-    gco_estadoCarga.className = "estado estado-cargando";
-    gco_btnGuardar.disabled = true;
+async function iniciarAplicacion() {
+    estadoCarga.textContent = "Cargando información...";
+    estadoCarga.className = "estado estado-cargando";
+    botonGuardar.disabled = true;
 
     try {
-        const [gco_datosRegistros, gco_datosCategorias, gco_datosResumen, gco_datosConfiguracion] =
+        const [datosRegistros, datosCategorias, datosResumen, datosConfiguracion] =
             await Promise.all([
-                gco_cargarArchivoJson("./registros.json"),
-                gco_cargarArchivoJson("./categorias.json"),
-                gco_cargarArchivoJson("./resumen.json"),
-                gco_cargarArchivoJson("./configuracion.json")
+                consultarAPI(API.registros),
+                consultarAPI(API.categorias),
+                consultarAPI(API.resumen),
+                consultarAPI(API.configuracion)
             ]);
 
-        if (!Array.isArray(gco_datosRegistros) || !Array.isArray(gco_datosCategorias)) {
-            throw new Error("La estructura de los archivos JSON no es válida.");
+        registros = datosRegistros;
+        categorias = datosCategorias;
+        resumen = datosResumen[0] || {};
+        configuracion = datosConfiguracion[0] || {};
+
+        if (!Array.isArray(registros) || !Array.isArray(categorias)) {
+            throw new Error("Los datos recibidos no tienen el formato esperado");
         }
 
-        gco_registros = gco_datosRegistros;
-        gco_categorias = gco_datosCategorias;
-        gco_resumen = gco_datosResumen;
-        gco_configuracion = gco_datosConfiguracion;
+        mostrarCategorias();
 
-        gco_poblarCategorias();
-        gco_estadoCarga.textContent = "Información cargada correctamente desde los archivos JSON.";
-        gco_estadoCarga.className = "estado estado-exito";
-        gco_btnGuardar.disabled = false;
+        estadoCarga.textContent = "Información cargada correctamente.";
+        estadoCarga.className = "estado estado-exito";
 
-        gco_renderizarEnDOM(gco_buscarPorCategoria(gco_selectFiltro.value));
-    } catch (gco_error) {
-        console.error("Error al cargar los datos:", gco_error);
-        gco_estadoCarga.textContent = "No se pudieron cargar los datos. Verifica los archivos JSON e intenta nuevamente.";
-        gco_estadoCarga.className = "estado estado-error";
-        gco_listaResultados.innerHTML = "";
-        gco_resumenConteo.textContent = "Total de registros: 0";
+        botonGuardar.disabled = false;
+
+        mostrarRegistros(buscarPorCategoria(selectFiltro.value));
+
+    } catch (error) {
+        console.error("Error:", error);
+
+        estadoCarga.textContent =
+            "No se pudieron cargar los datos. Verifica las direcciones de MockAPI.";
+
+        estadoCarga.className = "estado estado-error";
+        listaResultados.innerHTML = "";
+        resumenConteo.textContent = "Total de registros: 0";
     }
 }
-function gco_poblarCategorias() {
-    gco_selectCategoria.innerHTML = '<option value="">-- Selecciona una categoría --</option>';
-    gco_selectFiltro.innerHTML = '<option value="Todas">Todas</option>';
 
-    gco_categorias.forEach(gco_verdura => {
-        if (!gco_verdura.activa) return;
+function mostrarCategorias() {
+    selectCategoria.innerHTML =
+        '<option value="">-- Selecciona una categoría --</option>';
 
-        const gco_opcionRegistro = document.createElement("option");
-        gco_opcionRegistro.value = gco_verdura.nombre;
-        gco_opcionRegistro.textContent = gco_verdura.nombre;
-        gco_selectCategoria.appendChild(gco_opcionRegistro);
+    selectFiltro.innerHTML =
+        '<option value="Todas">Todas</option>';
 
-        const gco_opcionFiltro = document.createElement("option");
-        gco_opcionFiltro.value = gco_verdura.nombre;
-        gco_opcionFiltro.textContent = gco_verdura.nombre;
-        gco_selectFiltro.appendChild(gco_opcionFiltro);
+    categorias.forEach(categoria => {
+        if (categoria.activa === false) return;
+
+        const opcionRegistro = document.createElement("option");
+
+        opcionRegistro.value = categoria.nombre;
+        opcionRegistro.textContent = categoria.nombre;
+
+        selectCategoria.appendChild(opcionRegistro);
+
+        const opcionFiltro = document.createElement("option");
+
+        opcionFiltro.value = categoria.nombre;
+        opcionFiltro.textContent = categoria.nombre;
+
+        selectFiltro.appendChild(opcionFiltro);
     });
 
-    if (gco_configuracion.categoriaFiltroInicial) {
-        gco_selectFiltro.value = gco_configuracion.categoriaFiltroInicial;
+    if (configuracion.categoriaFiltroInicial) {
+        selectFiltro.value = configuracion.categoriaFiltroInicial;
     }
 }
 
-function gco_buscarPorCategoria(gco_categoriaSeleccionada) {
-    if (gco_categoriaSeleccionada === "Todas") {
-        return gco_registros;
+function buscarPorCategoria(categoriaSeleccionada) {
+    if (categoriaSeleccionada === "Todas") {
+        return registros;
     }
 
-    return gco_registros.filter(gco_fruta => gco_fruta.categoria === gco_categoriaSeleccionada);
+    return registros.filter(
+        material => material.categoria === categoriaSeleccionada
+    );
 }
-
-function gco_agregarRegistro(gco_nombre, gco_categoria, gco_monto) {
-    const gco_nuevoRegistro = {
-        id: Date.now(),
-        nombre: gco_nombre,
-        categoria: gco_categoria,
-        monto: Number(gco_monto)
+async function agregarRegistro(nombre, categoria, monto) {
+    const nuevoRegistro = {
+        nombre: nombre,
+        categoria: categoria,
+        monto: Number(monto)
     };
 
-    gco_registros.push(gco_nuevoRegistro);
-}
-function gco_renderizarEnDOM(gco_verduras) {
-    gco_listaResultados.innerHTML = "";
-    gco_resumenConteo.textContent = `Total de registros: ${gco_verduras.length}`;
+    const respuesta = await fetch(API.registros, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(nuevoRegistro)
+    });
 
-    if (gco_verduras.length === 0) {
-        const gco_mensajeVacio = document.createElement("li");
-        gco_mensajeVacio.classList.add("mensaje-vacio");
-        gco_mensajeVacio.textContent = "No hay materiales para mostrar en esta categoría.";
-        gco_listaResultados.appendChild(gco_mensajeVacio);
+    if (!respuesta.ok) {
+        throw new Error("No se pudo guardar el registro");
+    }
+
+    const registroGuardado = await respuesta.json();
+
+    registros.push(registroGuardado);
+
+    return registroGuardado;
+}
+
+function mostrarRegistros(materiales) {
+    listaResultados.innerHTML = "";
+
+    resumenConteo.textContent =
+        `Total de registros: ${materiales.length}`;
+
+    if (materiales.length === 0) {
+        const mensajeVacio = document.createElement("li");
+
+        mensajeVacio.classList.add("mensaje-vacio");
+
+        mensajeVacio.textContent =
+            "No hay materiales para mostrar en esta categoría.";
+
+        listaResultados.appendChild(mensajeVacio);
+
         return;
     }
 
-    gco_verduras.forEach(gco_fruta => {
-        const gco_tarjeta = document.createElement("li");
-        gco_tarjeta.classList.add("item-tarjeta");
+    materiales.forEach(material => {
+        const tarjeta = document.createElement("li");
 
-        const gco_info = document.createElement("div");
-        gco_info.classList.add("item-info");
+        tarjeta.classList.add("item-tarjeta");
 
-        const gco_nombre = document.createElement("span");
-        gco_nombre.classList.add("item-titulo");
-        gco_nombre.textContent = gco_fruta.nombre;
+        const informacion = document.createElement("div");
 
-        const gco_categoria = document.createElement("span");
-        gco_categoria.classList.add("item-categoria");
-        gco_categoria.textContent = `Categoría: ${gco_fruta.categoria}`;
+        informacion.classList.add("item-info");
 
-        const gco_monto = document.createElement("span");
-        gco_monto.classList.add("item-monto");
-        gco_monto.textContent = `$${Number(gco_fruta.monto).toLocaleString("es-CO")} COP`;
+        const nombre = document.createElement("span");
 
-        gco_info.appendChild(gco_nombre);
-        gco_info.appendChild(gco_categoria);
-        gco_tarjeta.appendChild(gco_info);
-        gco_tarjeta.appendChild(gco_monto);
-        gco_listaResultados.appendChild(gco_tarjeta);
+        nombre.classList.add("item-titulo");
+        nombre.textContent = material.nombre;
+
+        const categoria = document.createElement("span");
+
+        categoria.classList.add("item-categoria");
+
+        categoria.textContent =
+            `Categoría: ${material.categoria}`;
+
+        const monto = document.createElement("span");
+
+        monto.classList.add("item-monto");
+
+        monto.textContent =
+            `$${Number(material.monto).toLocaleString("es-CO")} COP`;
+
+        informacion.appendChild(nombre);
+        informacion.appendChild(categoria);
+
+        tarjeta.appendChild(informacion);
+        tarjeta.appendChild(monto);
+
+        listaResultados.appendChild(tarjeta);
     });
 }
-gco_dataForm.addEventListener("submit", function (gco_evento) {
-    gco_evento.preventDefault();
 
-    const gco_nombreIngresado = gco_inputNombre.value.trim();
-    const gco_categoriaIngresada = gco_selectCategoria.value;
-    const gco_montoIngresado = gco_inputMonto.value;
+formulario.addEventListener("submit", async function(evento) {
+    evento.preventDefault();
 
-    if (!gco_nombreIngresado || !gco_categoriaIngresada || gco_montoIngresado === "") {
+    const nombreIngresado = inputNombre.value.trim();
+
+    const categoriaIngresada = selectCategoria.value;
+
+    const montoIngresado = inputMonto.value;
+
+    if (!nombreIngresado || !categoriaIngresada || montoIngresado === "") {
+        estadoCarga.textContent = "Completa todos los campos.";
+        estadoCarga.className = "estado estado-error";
         return;
     }
 
-    if (Number(gco_montoIngresado) < 0 || !Number.isFinite(Number(gco_montoIngresado))) {
-        gco_estadoCarga.textContent = "El valor debe ser un número igual o mayor que cero.";
-        gco_estadoCarga.className = "estado estado-error";
+    if (
+        Number(montoIngresado) < 0 ||
+        !Number.isFinite(Number(montoIngresado))
+    ) {
+        estadoCarga.textContent =
+            "El monto debe ser un número igual o mayor que cero.";
+
+        estadoCarga.className = "estado estado-error";
+
         return;
     }
 
-    gco_agregarRegistro(gco_nombreIngresado, gco_categoriaIngresada, gco_montoIngresado);
-    gco_dataForm.reset();
-    gco_estadoCarga.textContent = "Registro agregado correctamente a la lista de esta sesión.";
-    gco_estadoCarga.className = "estado estado-exito";
-    gco_renderizarEnDOM(gco_buscarPorCategoria(gco_selectFiltro.value));
+    botonGuardar.disabled = true;
+
+    try {
+        await agregarRegistro(
+            nombreIngresado,
+            categoriaIngresada,
+            montoIngresado
+        );
+
+        formulario.reset();
+
+        estadoCarga.textContent =
+            "Material registrado correctamente en MockAPI.";
+
+        estadoCarga.className = "estado estado-exito";
+
+        mostrarRegistros(buscarPorCategoria(selectFiltro.value));
+
+    } catch (error) {
+        console.error("Error al guardar:", error);
+
+        estadoCarga.textContent =
+            "No se pudo guardar el material. Intenta nuevamente.";
+
+        estadoCarga.className = "estado estado-error";
+
+    } finally {
+        botonGuardar.disabled = false;
+    }
 });
 
-gco_selectFiltro.addEventListener("change", function () {
-    gco_renderizarEnDOM(gco_buscarPorCategoria(gco_selectFiltro.value));
+selectFiltro.addEventListener("change", function() {
+    mostrarRegistros(buscarPorCategoria(selectFiltro.value));
 });
 
-gco_inicializarAplicacion();
+iniciarAplicacion();
+
