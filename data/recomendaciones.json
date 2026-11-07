@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "titulo": "Separa desde el origen",
+    "descripcion": "Mantén papel, cartón, plástico y metales separados para facilitar su aprovechamiento."
+  },
+  {
+    "id": 2,
+    "titulo": "Entrega los materiales limpios",
+    "descripcion": "Procura que los envases estén vacíos y sin restos de comida o líquidos."
+  },
+  {
+    "id": 3,
+    "titulo": "Reduce y reutiliza",
+    "descripcion": "Antes de desechar un objeto, revisa si puedes usarlo nuevamente o evitar generar ese residuo."
+  }
+]

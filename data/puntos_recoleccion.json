@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "nombre": "Punto Verde Comunitario",
+    "ubicacion": "Centro comunitario del barrio",
+    "horario": "Lunes a viernes, 8:00 a. m. a 4:00 p. m."
+  },
+  {
+    "id": 2,
+    "nombre": "Estación de Reciclaje Escolar",
+    "ubicacion": "Zona ambiental de la institución",
+    "horario": "Durante la jornada escolar"
+  },
+  {
+    "id": 3,
+    "nombre": "Centro de Aprovechamiento",
+    "ubicacion": "Sector comercial",
+    "horario": "Sábados, 8:00 a. m. a 12:00 m."
+  }
+]

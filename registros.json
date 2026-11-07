@@ -1,0 +1,50 @@
+[
+    {
+        "id": 1,
+        "nombre": "Plástico PET",
+        "categoria": "100% Reciclable",
+        "monto": 120000
+    },
+    {
+        "id": 2,
+        "nombre": "Cobre",
+        "categoria": "75% Reciclable",
+        "monto": 45000
+    },
+    {
+        "id": 3,
+        "nombre": "Papel y cartón limpio",
+        "categoria": "100% Reciclable",
+        "monto": 35000
+    },
+    {
+        "id": 4,
+        "nombre": "Aluminio",
+        "categoria": "100% Reciclable",
+        "monto": 68000
+    },
+    {
+        "id": 5,
+        "nombre": "Vidrio",
+        "categoria": "75% Reciclable",
+        "monto": 28000
+    },
+    {
+        "id": 6,
+        "nombre": "Envases plásticos mixtos",
+        "categoria": "50% Reciclable",
+        "monto": 18000
+    },
+    {
+        "id": 7,
+        "nombre": "Chatarra metálica",
+        "categoria": "75% Reciclable",
+        "monto": 52000
+    },
+    {
+        "id": 8,
+        "nombre": "Botellas PET transparentes",
+        "categoria": "100% Reciclable",
+        "monto": 42000
+    }
+]

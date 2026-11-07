@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "nombre": "Plástico",
+    "categoria": "100% Reciclable",
+    "monto": 120000
+  },
+  {
+    "id": 2,
+    "nombre": "Cobre",
+    "categoria": "75% Reciclable",
+    "monto": 45000
+  },
+  {
+    "id": 3,
+    "nombre": "Papel periódico",
+    "categoria": "100% Reciclable",
+    "monto": 30000
+  },
+  {
+    "id": 4,
+    "nombre": "Cartón",
+    "categoria": "75% Reciclable",
+    "monto": 25000
+  },
+  {
+    "id": 5,
+    "nombre": "Envases multicapa",
+    "categoria": "50% Reciclable",
+    "monto": 18000
+  }
+]

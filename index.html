@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Aplicación para registrar y clasificar materiales reciclables.">
+    <title>Gestión de Datos en Tiempo Real - Momento 3</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="main-container">
+        <header class="encabezado">
+            <p class="etiqueta">PROYECTO INTEGRADOR · MOMENTO 3</p>
+            <h1>Gestión de Datos en Tiempo Real</h1>
+            <p class="subtitulo">Registro y clasificación de materiales reciclables</p>
+        </header>
+
+        <section class="card">
+            <h2>1. Registrar nuevo material</h2>
+            <form id="dataForm">
+                <div class="form-group">
+                    <label for="inputNombre">Nombre / descripción del material:</label>
+                    <input type="text" id="inputNombre" placeholder="Ej. Botellas de plástico PET" required>
+                </div>
+                <div class="form-group">
+                    <label for="selectCategoria">Categoría de reciclaje:</label>
+                    <select id="selectCategoria" required>
+                        <option value="">-- Selecciona una categoría --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="inputMonto">Valor estimado ($ COP):</label>
+                    <input type="number" id="inputMonto" placeholder="Ej. 50000" min="0" step="1" required>
+                </div>
+                <button type="submit" id="btnGuardar">Guardar registro</button>
+            </form>
+        </section>
+
+        <section class="card">
+            <h2>2. Filtros de búsqueda</h2>
+            <div class="form-group">
+                <label for="selectFiltro">Filtrar por categoría:</label>
+                <select id="selectFiltro">
+                    <option value="Todas">Todas</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>3. Resultados en vivo</h2>
+            <p id="estadoCarga" class="estado" role="status" aria-live="polite">Preparando solicitud de información...</p>
+            <p id="resumenConteo" class="resumen-conteo">Total de registros: 0</p>
+            <ul id="listaResultados" class="lista-resultados"></ul>
+        </section>
+
+        <footer>
+            <p>Proyecto académico · Datos de prueba cargados de archivos JSON locales.</p>
+        </footer>
+    </main>
+    <script type="module" src="main.js"></script>
+</body>
+</html>

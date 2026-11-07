@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "nombre": "100% Reciclable",
+    "descripcion": "Materiales que pueden aprovecharse completamente cuando se separan y procesan de manera adecuada."
+  },
+  {
+    "id": 2,
+    "nombre": "75% Reciclable",
+    "descripcion": "Materiales cuyo aprovechamiento es alto, aunque pueden tener componentes o residuos que requieren otro manejo."
+  },
+  {
+    "id": 3,
+    "nombre": "50% Reciclable",
+    "descripcion": "Materiales que solo permiten recuperar una parte de sus componentes; es importante revisar su clasificación local."
+  }
+]
