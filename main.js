@@ -14,8 +14,6 @@ const gco_listaResultados = document.getElementById("listaResultados");
 const gco_resumenConteo = document.getElementById("resumenConteo");
 const gco_estadoCarga = document.getElementById("estadoCarga");
 const gco_btnGuardar = document.getElementById("btnGuardar");
-
-// Realiza una solicitud asíncrona y controla errores de red y respuestas HTTP.
 async function gco_cargarArchivoJson(gco_rutaArchivo) {
     const gco_respuesta = await fetch(gco_rutaArchivo);
 
@@ -25,8 +23,6 @@ async function gco_cargarArchivoJson(gco_rutaArchivo) {
 
     return await gco_respuesta.json();
 }
-
-// Carga los cuatro archivos JSON al iniciar la aplicación.
 async function gco_inicializarAplicacion() {
     gco_estadoCarga.textContent = "Solicitando información de los materiales reciclables...";
     gco_estadoCarga.className = "estado estado-cargando";
@@ -64,8 +60,6 @@ async function gco_inicializarAplicacion() {
         gco_resumenConteo.textContent = "Total de registros: 0";
     }
 }
-
-// Llena los select con las categorías recibidas desde categorias.json.
 function gco_poblarCategorias() {
     gco_selectCategoria.innerHTML = '<option value="">-- Selecciona una categoría --</option>';
     gco_selectFiltro.innerHTML = '<option value="Todas">Todas</option>';
@@ -89,7 +83,6 @@ function gco_poblarCategorias() {
     }
 }
 
-// Devuelve todos los materiales o solo los de la categoría seleccionada.
 function gco_buscarPorCategoria(gco_categoriaSeleccionada) {
     if (gco_categoriaSeleccionada === "Todas") {
         return gco_registros;
@@ -98,7 +91,6 @@ function gco_buscarPorCategoria(gco_categoriaSeleccionada) {
     return gco_registros.filter(gco_fruta => gco_fruta.categoria === gco_categoriaSeleccionada);
 }
 
-// Agrega un registro nuevo a los datos que están en memoria durante esta sesión.
 function gco_agregarRegistro(gco_nombre, gco_categoria, gco_monto) {
     const gco_nuevoRegistro = {
         id: Date.now(),
@@ -109,8 +101,6 @@ function gco_agregarRegistro(gco_nombre, gco_categoria, gco_monto) {
 
     gco_registros.push(gco_nuevoRegistro);
 }
-
-// Actualiza el listado y el contador usando elementos del DOM.
 function gco_renderizarEnDOM(gco_verduras) {
     gco_listaResultados.innerHTML = "";
     gco_resumenConteo.textContent = `Total de registros: ${gco_verduras.length}`;
@@ -149,8 +139,6 @@ function gco_renderizarEnDOM(gco_verduras) {
         gco_listaResultados.appendChild(gco_tarjeta);
     });
 }
-
-// Evento del formulario: conserva el registro dinámico del momento 2.
 gco_dataForm.addEventListener("submit", function (gco_evento) {
     gco_evento.preventDefault();
 
@@ -175,10 +163,8 @@ gco_dataForm.addEventListener("submit", function (gco_evento) {
     gco_renderizarEnDOM(gco_buscarPorCategoria(gco_selectFiltro.value));
 });
 
-// Evento del filtro: vuelve a pintar los resultados según la categoría.
 gco_selectFiltro.addEventListener("change", function () {
     gco_renderizarEnDOM(gco_buscarPorCategoria(gco_selectFiltro.value));
 });
 
-// La aplicación inicia la carga asíncrona cuando el módulo ya está listo.
 gco_inicializarAplicacion();
