@@ -3,7 +3,7 @@ console.log("ECOVIDA iniciada correctamente");
 const API = {
     registros: "",
     categorias: "",
-    resumen: "",
+    resumen: "https://6aef5e07b9925b27ce16dc82.mockapi.io/api/v3/RESUMEN",
     configuracion: ""
 };
 let registros = [];
